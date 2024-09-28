@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <meta name="Description" content="Enter your description here" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.1.0/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <link rel="stylesheet" href="assets/css/style.css">
+    <title>New transaction</title>
+</head>
+
+<body>
+    <div class="container">
+        <h1>
+            Hello <span th:text="${account.name}"></span>! Welcome to the Bank online
+        </h1>
+        <h1>
+            New transaction
+        </h1>
+        <div th:if="${message}" class="alert alert-danger" role="alert">
+            <span th:text="${message}"></span>
+        </div>
+        <form method="post" role="form" th:action="@{/transaction}">
+            <div class="mb-3">
+                <label for="amount" class="form-label">
+                    Amount
+                </label>
+                <input type="number" class="form-control" id="amount" name="amount" required>
+            </div>
+            <div class="mb-3">
+                <label for="pin" class="form-label">Type</label>
+                <select class="form-select" id="type" name="type" required>
+                    <option value="withdraw">Withdraw</option>
+                    <option value="deposit">Deposit</option>
+                </select>
+            </div>
+            <button type="submit" class="btn btn-primary">
+                Save
+            </button>
+</form>
+        <div class="container text-right">
+            <a th:href="@{/logout}" class="btn btn-danger">Logout</a>
+        </div>
+        <!-- back to home -->
+        <div class="container text-left">
+            <a th:href="@{/home}" class="btn btn-success">Back to Home</a>
+        </div>
+    </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/2.9.2/umd/popper.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.1.0/js/bootstrap.min.js"></script>
+</body>
+
+</html>

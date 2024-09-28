@@ -1,0 +1,5 @@
+{"properties": [{
+  "name": "azure.maps.api.key",
+  "type": "java.lang.String",
+  "description": "Azure Maps API key"
+}]}

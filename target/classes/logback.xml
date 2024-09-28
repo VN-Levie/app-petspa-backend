@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+
+    <!-- Console appender -->
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>%d{yyyy-MM-dd HH:mm:ss} %-5level %logger{36} - %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <!-- Set root log level to WARN -->
+    <root level="WARN">
+        <appender-ref ref="STDOUT" />
+    </root>
+
+    <!-- Specific loggers for HikariCP, Javalin, and Jetty -->
+    <logger name="com.zaxxer.hikari" level="WARN" />
+    <logger name="io.javalin" level="WARN" />
+    <logger name="org.eclipse.jetty" level="WARN" />
+    <!-- tất thông báo mặc định của sptring boot -->
+    <logger name="org.springframework.boot" level="INFO" />
+    <!-- tắt spring-jcl -->
+    <logger name="org.springframework" level="ERROR" />
+
+</configuration>
