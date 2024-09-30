@@ -23,10 +23,6 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(
-                                "/api/**",
-                                "/api/auth/**",
-                                "/api/admin/**",
-                                "/api/shop/**",
                                 "/search-place/**",
                                 "/get-coordinates/**",
                                 "/get-address/**",
@@ -35,13 +31,16 @@ public class SecurityConfig {
                                 "/api-docs/**",
                                 "/api-docs/swagger-config",
                                 "/swagger-ui.html")
+                        .permitAll() // Cho phép truy cập công khai vào các URL này
 
-                        .permitAll()
+                        // .requestMatchers("/api/**").authenticated() // Các API yêu cầu xác thực
+                        .requestMatchers("/api/**").permitAll() // Đang để public cho dễ test
+                        .requestMatchers("/uploads/**").permitAll() // Cho phép truy cập công khai vào thư mục uploads
                         .anyRequest().authenticated())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
 
         http.addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
-        //show url in console        
+        // show url in console
         return http.build();
     }
 
