@@ -4,6 +4,7 @@ import com.petspa.backend.dto.ApiResponse;
 import com.petspa.backend.dto.PetDTO;
 import com.petspa.backend.dto.PetPhotoDTO;
 import com.petspa.backend.dto.PetTypeDTO;
+import com.petspa.backend.entity.PetPhoto;
 import com.petspa.backend.dto.PetPhotoCategoryDTO;
 import com.petspa.backend.service.PetService;
 import com.petspa.backend.service.PetPhotoService;
@@ -42,6 +43,8 @@ public class PetController {
     @Autowired
     private FileUploadService fileUploadService;
 
+   
+
     // Lấy tất cả thú cưng
     @GetMapping // TODO: CHuyển sang cho admin
     public ResponseEntity<ApiResponse> getAllPets() {
@@ -50,15 +53,36 @@ public class PetController {
         return ResponseEntity.ok(response);
     }
 
+    // lay61 tat61 ca3 pet theo account id
+    @GetMapping("/account/{accountId}")
+    public ResponseEntity<ApiResponse> getAllPetsByAccount(@PathVariable Long accountId) {
+        List<PetDTO> pets = petService.getAllPetsByAccountId(accountId);
+        ApiResponse response = new ApiResponse(ApiResponse.STATUS_OK, "List of pets", pets);
+        return ResponseEntity.ok(response);
+    }
+
     // Lấy thú cưng theo ID
-    @GetMapping("/{id}")
-    public ResponseEntity<ApiResponse> getPetById(@RequestParam Long petId, @RequestParam Long accountId) {
+    @GetMapping("/{accountId}/{petId}")
+    public ResponseEntity<ApiResponse> getPetById(
+            @PathVariable Long petId,
+            @PathVariable Long accountId) {
+
         Optional<PetDTO> pet = Optional.ofNullable(petService.getPetByIdAndAccountId(petId, accountId));
+
         if (pet.isEmpty()) {
             ApiResponse response = new ApiResponse(ApiResponse.STATUS_NOT_FOUND, "Pet not found", null);
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
         }
+
         ApiResponse response = new ApiResponse(ApiResponse.STATUS_OK, "Pet details", pet.get());
+        return ResponseEntity.ok(response);
+    }
+
+    //đếm số lượng pet theo account id
+    @GetMapping("/count/{accountId}")
+    public ResponseEntity<ApiResponse> countPetsByAccountId(@PathVariable Long accountId) {
+        Long count = petService.countPetsByAccountId(accountId);
+        ApiResponse response = new ApiResponse(ApiResponse.STATUS_OK, "Number of pets", count);
         return ResponseEntity.ok(response);
     }
 
@@ -90,7 +114,8 @@ public class PetController {
 
             try {
                 // check trùng thông tin
-                if (petService.findMatchingPetByAccount(petDTO, petDTO.getAccountId()) != null) {
+                PetDTO pet =petService.findPet(petDTO);
+                if (pet != null && !pet.isDeleted()) {
                     ApiResponse response = new ApiResponse(ApiResponse.STATUS_BAD_REQUEST, "Pet already exists", null);
                     return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
                 }
@@ -107,7 +132,8 @@ public class PetController {
                 // kiểm tra loại file ảnh
                 if (!fileValidationService.isImageValid(avatarFile)) {
                     ApiResponse response = new ApiResponse(ApiResponse.STATUS_BAD_REQUEST,
-                            "Please upload a valid image file (jpg, jpeg, png, gif, bmp, webp) with size less than 50MB",
+                            "Please upload a valid image file (jpg, jpeg, png, gif, bmp, webp) with size less than 50MB"
+                                    + avatarFile.getContentType(),
                             null);
                     return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
                 }
@@ -118,6 +144,24 @@ public class PetController {
             petDTO.setAvatarUrl(avatarUrl);
 
             PetDTO createdPet = petService.addPet(petDTO);
+            List<PetPhotoDTO> photos = petPhotoService.getAllPhotosByPetId(createdPet.getId());
+            PetPhotoCategoryDTO avCategoryDTO = petPhotoCategoryService.getPhotoCategoryById((long) 1);
+            if(avCategoryDTO == null){
+                PetPhotoCategoryDTO petPhotoCategoryDTO = new PetPhotoCategoryDTO();
+                petPhotoCategoryDTO.setId((long) 1);
+                petPhotoCategoryDTO.setName("Avatar");
+                petPhotoCategoryDTO.setDescription("Avatar photo category");
+                petPhotoCategoryService.addPhotoCategory(petPhotoCategoryDTO);
+            }
+            if(photos.size() == 0){
+                PetPhotoDTO petPhotoDTO = new PetPhotoDTO();
+                petPhotoDTO.setPetId(createdPet.getId());
+                petPhotoDTO.setPhotoUrl(createdPet.getAvatarUrl());
+                petPhotoDTO.setPhotoCategoryId((long) 1);
+                petPhotoDTO.setUploadedBy(petDTO.getAccountId());
+                petPhotoService.addPhoto(petPhotoDTO);
+            }
+
             ApiResponse response = new ApiResponse(ApiResponse.STATUS_CREATED, "Pet added successfully", createdPet);
             return ResponseEntity.status(HttpStatus.CREATED).body(response);
         } catch (Exception e) {
@@ -127,10 +171,13 @@ public class PetController {
         }
     }
 
+    // po
+
     // Cập nhật thú cưng
-    @PutMapping(value = "/{id}", consumes = { "multipart/form-data" })
+    @PutMapping(value = "/{accountId}/{petId}", consumes = { "multipart/form-data" })
     public ResponseEntity<ApiResponse> updatePet(
-            @PathVariable Long id,
+            @PathVariable Long accountId,
+            @PathVariable Long petId,
             @RequestParam("name") String name,
             @RequestParam("description") String description,
             @RequestParam("height") Double height,
@@ -139,7 +186,7 @@ public class PetController {
             @RequestParam(value = "avatar", required = false) MultipartFile avatarFile) {
 
         // Kiểm tra thú cưng có tồn tại không
-        if (petService.getPetById(id) == null) {
+        if (petService.getPetById(petId) == null) {
             ApiResponse response = new ApiResponse(ApiResponse.STATUS_NOT_FOUND, "Pet not found", null);
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
         }
@@ -150,14 +197,20 @@ public class PetController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
         }
 
-        //kiểm tra deleted = false
-        if (petService.getPetById(id).isDeleted()) {
+        // kiểm tra deleted = false
+        if (petService.getPetById(petId).isDeleted()) {
             ApiResponse response = new ApiResponse(ApiResponse.STATUS_NOT_FOUND, "Pet not found", null);
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
         }
 
+        //kiểm tra account id
+        if (!petService.getPetById(petId).getAccountId().equals(accountId)) {
+            ApiResponse response = new ApiResponse(ApiResponse.STATUS_FORBIDDEN, "You are not allowed to update this pet", null);
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(response);
+        }
+
         PetDTO petDTO = new PetDTO();
-        petDTO.setId(id);
+        petDTO.setId(petId);
         petDTO.setName(name);
         petDTO.setDescription(description);
         petDTO.setHeight(height);
@@ -177,10 +230,14 @@ public class PetController {
 
             avatarUrl = fileUploadService.uploadFile(avatarFile, "pets"); // Hàm xử lý upload ảnh
         }
+        if(avatarUrl != null){
+             petDTO.setAvatarUrl(avatarUrl);
+        } else {
+            petDTO.setAvatarUrl(petService.getPetById(petId).getAvatarUrl());
+        }
+       
 
-        petDTO.setAvatarUrl(avatarUrl);
-
-        PetDTO updatedPet = petService.updatePet(id, petDTO);
+        PetDTO updatedPet = petService.updatePet(petId, petDTO);
         ApiResponse response = new ApiResponse(ApiResponse.STATUS_OK, "Pet updated successfully", updatedPet);
         return ResponseEntity.ok(response);
     }

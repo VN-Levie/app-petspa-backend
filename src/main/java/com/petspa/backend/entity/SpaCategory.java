@@ -22,6 +22,9 @@ public class SpaCategory extends BaseEntity {
     @Column(nullable = false)
     private String description;
 
+    @Column(name = "image_url", nullable = true)
+    private String imageUrl;
+
     // Liên kết với bảng SpaProduct
     @OneToMany(mappedBy = "category", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<SpaProduct> products;

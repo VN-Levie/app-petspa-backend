@@ -81,7 +81,7 @@ public class AuthController {
             SecurityContextHolder.getContext().setAuthentication(authentication);
 
             String jwt = jwtUtil.generateToken(account);
-            String refreshToken = jwtUtil.generateRefreshToken(username);
+            String refreshToken = jwtUtil.generateToken(username, "refresh_token");
             AuthData data = new AuthData(account, jwt, refreshToken);
             ApiResponse response = new ApiResponse(ApiResponse.STATUS_OK, "Login successful", data);
             return ResponseEntity.ok(response);
@@ -121,7 +121,7 @@ public class AuthController {
                     new UsernamePasswordAuthenticationToken(registerDTO.getEmail(), registerDTO.getPassword()));
             SecurityContextHolder.getContext().setAuthentication(authentication);
             String jwt = jwtUtil.generateToken(account);
-            String refreshToken = jwtUtil.generateRefreshToken(registerDTO.getEmail());
+            String refreshToken = jwtUtil.generateToken(registerDTO.getEmail(), "refresh_token");
             AuthData data = new AuthData(account, jwt, refreshToken);
             ApiResponse response = new ApiResponse(ApiResponse.STATUS_CREATED,
                     "User registered and logged in successfully", data);

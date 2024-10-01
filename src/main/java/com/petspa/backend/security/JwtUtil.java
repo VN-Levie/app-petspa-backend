@@ -7,6 +7,7 @@ import org.springframework.stereotype.Component;
 
 import com.petspa.backend.entity.Account;
 
+import java.text.DateFormat;
 import java.util.Date;
 
 import javax.crypto.SecretKey;
@@ -20,23 +21,24 @@ public class JwtUtil {
     // Tạo key mạnh hơn
     private long jwtExpirationInMs = 3600000; // 1 hour
     // thời gian sống của refresh token là 90 ngày
-    private long refreshTokenExpirationInMs = 1000 * 60 * 60 * 24 * 90; // 30 days
+    private long refreshTokenExpirationInMs = jwtExpirationInMs * 24 * 90; // 90 ngày : 
     private long otpExpirationInMs = 600000; // 10 minutes
 
     public String generateToken(String username, String type) {
-        long now = System.currentTimeMillis();
-        long expiryDate = switch (type) {
-            case "access_token" -> now + jwtExpirationInMs;
-            case "refresh_token" -> now + refreshTokenExpirationInMs;
-            case "otp" -> now + otpExpirationInMs;
-            default -> otpExpirationInMs;
+        Date now = new Date();        
+        Date expiryDate = switch (type) {
+            case "access_token" -> new Date(now.getTime() + jwtExpirationInMs);
+            case "refresh_token" -> new Date(now.getTime() + refreshTokenExpirationInMs);
+            case "otp" -> new Date(now.getTime() + otpExpirationInMs);
+            default -> new Date(now.getTime() + otpExpirationInMs);
         };
-
+        //tets show thời gian hếthạn dd/MM/yyyy HH:mm:ss
+        System.out.println("Thời gian hết hạn: " + DateFormat.getDateInstance(DateFormat.LONG).format(expiryDate));
         return Jwts.builder()
                 .setSubject(username)
                 .claim("type", type)
                 .setIssuedAt(new Date())
-                .setExpiration(new Date(expiryDate))
+                .setExpiration(new Date((new Date()).getTime() + refreshTokenExpirationInMs))
                 .signWith(secret)
                 .compact();
     }
@@ -54,15 +56,7 @@ public class JwtUtil {
                 .compact();
     }
 
-    // generate refresh token
-    public String generateRefreshToken(String username) {
-        return Jwts.builder()
-                .setSubject(username)
-                .setIssuedAt(new Date())
-                .setExpiration(new Date((new Date()).getTime() + refreshTokenExpirationInMs))
-                .signWith(secret)
-                .compact();
-    }
+    
 
     public String getUsernameFromToken(String token) {
         return Jwts.parserBuilder().setSigningKey(secret).build().parseClaimsJws(token).getBody().getSubject();
@@ -72,7 +66,7 @@ public class JwtUtil {
         try {
             var claims = Jwts.parserBuilder().setSigningKey(secret).build().parseClaimsJws(token).getBody();
             String tokenType = claims.get("type", String.class);
-
+            System.out.println("Token type: " + tokenType);
             if (!requiredType.equals(tokenType)) {
                 return false;
             }
@@ -80,6 +74,8 @@ public class JwtUtil {
             return true;
         } catch (JwtException | IllegalArgumentException ex) {
             // Có thể log lỗi hoặc xử lý tại đây
+            System.out.println("Invalid JWT token");
+            ex.printStackTrace();
         }
         return false;
     }

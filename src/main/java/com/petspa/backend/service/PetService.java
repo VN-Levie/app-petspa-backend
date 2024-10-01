@@ -29,6 +29,13 @@ public class PetService {
                 .collect(Collectors.toList());
     }
 
+    //lay61 pet theo account id
+    public List<PetDTO> getAllPetsByAccountId(Long accountId) {
+        return petRepository.findByAccountIdAndDeleted(accountId, false).stream()
+                .map(this::convertToDTO)
+                .collect(Collectors.toList());
+    }
+
     // Lấy tất cả thú cưng theo phân trang và tìm kiếm
     public List<PetDTO> getAllPets(String petType, String search, int limit, int offset, Long accountId) {
         Pageable pageable = PageRequest.of(offset / limit, limit);
@@ -54,11 +61,31 @@ public class PetService {
                 .orElse(null);
     }
 
+    //countPetsByAccountId
+    public Long countPetsByAccountId(Long accountId) {
+        return petRepository.countPetsByAccountId(accountId);
+    }
+
     //check trùng thông tin
     public PetDTO findMatchingPetByAccount(PetDTO petDTO, Long accountId) {
         //check trùng tên, chiều cao, cân nặng và loại thú cưng
         return petRepository.findAllPetsByAccount(null, null, accountId, PageRequest.of(0, 1))
                 .stream()
+                .filter(pet -> pet.getName().equals(petDTO.getName())
+                        && pet.getHeight().equals(petDTO.getHeight())
+                        && pet.getWeight().equals(petDTO.getWeight())
+                        && pet.getPetType().getId().equals(petDTO.getPetTypeId()))
+                .map(this::convertToDTO)
+                .findFirst()
+                .orElse(null);
+    }
+
+    //findPet(PetDTO petDTO)
+    public PetDTO findPet(PetDTO petDTO) {
+        //lấy tất cả thú cưng theo account id
+        List<Pet> pets = petRepository.findByAccountId(petDTO.getAccountId());
+        //check trùng thông tin
+        return pets.stream()
                 .filter(pet -> pet.getName().equals(petDTO.getName())
                         && pet.getHeight().equals(petDTO.getHeight())
                         && pet.getWeight().equals(petDTO.getWeight())

@@ -9,8 +9,11 @@ public class AuthData {
 
     public AuthData(Account account, String jwt, String refreshToken) {
         this.account = new Account();
+        this.account.setId(account.getId());
         this.account.setEmail(account.getEmail());
         this.account.setName(account.getName());
+        // this.account.setAvatarUrl(account.getAvatarUrl());
+        this.account.setRoles(account.getRoles());
         this.account.setCreatedAt(account.getCreatedAt());
         this.jwt = jwt;
         this.refreshToken = refreshToken;
