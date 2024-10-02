@@ -29,6 +29,7 @@ import com.petspa.backend.repository.AccountRepository;
 import com.petspa.backend.security.JwtUtil;
 import com.petspa.backend.service.EmailService;
 
+import io.jsonwebtoken.JwtException;
 import jakarta.validation.Valid;
 
 @RestController
@@ -167,14 +168,23 @@ public class AuthController {
 
     // lấy toekm mới từ refresh token
     @PostMapping("/refresh-token")
-    public ResponseEntity<ApiResponse> refreshToken(@RequestParam String refreshToken) {
+    public ResponseEntity<ApiResponse> refreshToken(@RequestBody String refreshToken) {
         try {
+            refreshToken = getToken(refreshToken);
             if (refreshToken.startsWith("Bearer ")) {
                 refreshToken = refreshToken.substring(7);
-            }
-
-            if (!jwtUtil.validateToken(refreshToken, "refresh_token")) {
-                ApiResponse response = new ApiResponse(ApiResponse.STATUS_UNAUTHORIZED, "Invalid refresh token", null);
+            }          
+            try {
+                if (!jwtUtil.validateToken(refreshToken, "refresh_token")) {
+                    ApiResponse response = new ApiResponse(ApiResponse.STATUS_UNAUTHORIZED, "Invalid refresh token",
+                            null);
+                    return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
+                }
+            } catch (JwtException e) {
+                ApiResponse response = new ApiResponse(ApiResponse.STATUS_UNAUTHORIZED, "Fresh token is expired", null);
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
+            } catch (IllegalArgumentException e) {
+                ApiResponse response = new ApiResponse(ApiResponse.STATUS_UNAUTHORIZED, "Invalid refresh token!", null);
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
             }
 
@@ -194,6 +204,17 @@ public class AuthController {
             ApiResponse response = new ApiResponse(ApiResponse.STATUS_UNAUTHORIZED, "Invalid refresh token", null);
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
         }
+    }
+
+    private String getToken(String refreshToken) {
+
+        if (refreshToken.contains("refreshToken")) {
+            refreshToken = refreshToken.substring(18, refreshToken.length() - 2);
+        }
+        if (refreshToken.startsWith("Bearer ")) {
+            refreshToken = refreshToken.substring(7);
+        }
+        return refreshToken;
     }
 
     @PostMapping("/forgot-password")

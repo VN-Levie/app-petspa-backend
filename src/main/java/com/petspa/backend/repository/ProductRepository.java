@@ -16,7 +16,7 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
     List<Product> findByCategoryId(Long categoryId);
 
     @Query("SELECT p FROM Product p WHERE "
-            + "(:category IS NULL OR p.category.name = :category) AND "
+            + "(:category IS NULL OR p.category.id = :category) AND "
             + "(:search IS NULL OR LOWER(p.name) LIKE LOWER(CONCAT('%', :search, '%')))")
     Page<Product> findAllProducts(String category, String search, Pageable pageable);
 

@@ -21,18 +21,18 @@ public class JwtUtil {
     // Tạo key mạnh hơn
     private long jwtExpirationInMs = 3600000; // 1 hour
     // thời gian sống của refresh token là 90 ngày
-    private long refreshTokenExpirationInMs = jwtExpirationInMs * 24 * 90; // 90 ngày : 
+    private long refreshTokenExpirationInMs = jwtExpirationInMs * 24 * 90; // 90 ngày :
     private long otpExpirationInMs = 600000; // 10 minutes
 
     public String generateToken(String username, String type) {
-        Date now = new Date();        
+        Date now = new Date();
         Date expiryDate = switch (type) {
             case "access_token" -> new Date(now.getTime() + jwtExpirationInMs);
             case "refresh_token" -> new Date(now.getTime() + refreshTokenExpirationInMs);
             case "otp" -> new Date(now.getTime() + otpExpirationInMs);
             default -> new Date(now.getTime() + otpExpirationInMs);
         };
-        //tets show thời gian hếthạn dd/MM/yyyy HH:mm:ss
+        // tets show thời gian hếthạn dd/MM/yyyy HH:mm:ss
         System.out.println("Thời gian hết hạn: " + DateFormat.getDateInstance(DateFormat.LONG).format(expiryDate));
         return Jwts.builder()
                 .setSubject(username)
@@ -56,8 +56,6 @@ public class JwtUtil {
                 .compact();
     }
 
-    
-
     public String getUsernameFromToken(String token) {
         return Jwts.parserBuilder().setSigningKey(secret).build().parseClaimsJws(token).getBody().getSubject();
     }
@@ -73,11 +71,9 @@ public class JwtUtil {
 
             return true;
         } catch (JwtException | IllegalArgumentException ex) {
-            // Có thể log lỗi hoặc xử lý tại đây
-            System.out.println("Invalid JWT token");
-            ex.printStackTrace();
+            throw ex;
         }
-        return false;
+
     }
 
 }

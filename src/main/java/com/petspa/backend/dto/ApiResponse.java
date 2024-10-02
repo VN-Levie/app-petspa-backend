@@ -18,4 +18,12 @@ public class ApiResponse {
     private int status;
     private String message;
     private Object data; // Bạn có thể thay đổi thành kiểu dữ liệu phù hợp với ứng dụng
+
+    //constructor
+    public ApiResponse(int status, String message) {
+        this.status = status;
+        this.message = message;
+    }
+
+   
 }

@@ -12,11 +12,9 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@AttributeOverrides({
-    @AttributeOverride(name = "createdAt", column = @Column(name = "created_at", insertable = false, updatable = false)),
-    @AttributeOverride(name = "updatedAt", column = @Column(name = "updated_at"))
-})
 public class AddressBook extends BaseEntity {
+
+    
 
     @Column(name = "street")
     private String street;
@@ -32,6 +30,16 @@ public class AddressBook extends BaseEntity {
 
     @Column(name = "country")
     private String country;
+
+    //Họ tên, số điện thoại, email, ghi chú
+    @Column(name = "full_name")
+    private String fullName;
+
+    @Column(name = "phone_number")
+    private String phoneNumber;
+
+    @Column(name = "email", nullable = true)
+    private String email;
 
     // Liên kết với bảng Account, sử dụng ManyToOne vì một địa chỉ chỉ thuộc về một tài khoản
     @ManyToOne(fetch = FetchType.LAZY)

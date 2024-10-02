@@ -30,9 +30,14 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         // Lấy JWT từ header
         String jwtToken = getJwtFromRequest(request);
-        
+        boolean isValidate = false;
+        try {
+            isValidate = jwtUtil.validateToken(jwtToken, "access_token");
+        } catch (Exception e) {
+
+        }
         // Lấy username từ token
-        if (jwtToken != null && jwtUtil.validateToken(jwtToken, "access_token")) {
+        if (jwtToken != null && isValidate) {
             String username = jwtUtil.getUsernameFromToken(jwtToken);
 
             // Lấy UserDetails từ UserDetailsService và kiểm tra xác thực

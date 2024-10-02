@@ -5,6 +5,8 @@ import com.petspa.backend.entity.Category;
 import com.petspa.backend.entity.Product;
 import com.petspa.backend.repository.CategoryRepository;
 import com.petspa.backend.repository.ProductRepository;
+
+import org.hibernate.Hibernate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -34,11 +36,24 @@ public class ProductService {
      public List<ProductDTO> getAllProducts(String category, String search, int limit, int offset) {
         Pageable pageable = PageRequest.of(offset / limit, limit); // Tạo Pageable từ offset và limit
         Page<Product> productPage = productRepository.findAllProducts(category, search, pageable);
-        
+    
+        // Khởi tạo (initialize) đối tượng Category trước khi map to DTO
+        productPage.forEach(product -> Hibernate.initialize(product.getCategory()));
+    
         return productPage.stream()
                           .map(this::mapToDTO)
                           .collect(Collectors.toList());
     }
+
+    //getById
+    public ProductDTO getById(Long id) {
+        Optional<Product> product = productRepository.findById(id);
+        if (product.isPresent()) {
+            return convertToDTO(product.get());
+        }
+        return null;
+    }
+    
 
     // Map Product entity sang ProductDTO
     private ProductDTO mapToDTO(Product product) {

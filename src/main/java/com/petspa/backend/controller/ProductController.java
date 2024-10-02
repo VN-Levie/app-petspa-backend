@@ -1,5 +1,6 @@
 package com.petspa.backend.controller;
 
+import com.petspa.backend.dto.ApiResponse;
 import com.petspa.backend.dto.ProductDTO;
 import com.petspa.backend.service.ProductService;
 import com.petspa.backend.service.ShopService;
@@ -16,32 +17,38 @@ public class ProductController {
 
     @Autowired
     private ProductService productService;
+    @Autowired
     private ShopService shopService;
 
     // Lấy tất cả sản phẩm
     @GetMapping
-    public ResponseEntity<List<ProductDTO>> getAllProducts(
+    public ResponseEntity<ApiResponse> getAllProducts(
             @RequestParam(required = false) String category,
             @RequestParam(required = false) String search,
             @RequestParam(required = false, defaultValue = "10") int limit,
             @RequestParam(required = false, defaultValue = "0") int offset) {
 
         List<ProductDTO> products = productService.getAllProducts(category, search, limit, offset);
-        return ResponseEntity.ok(products);
+        ApiResponse response = new ApiResponse(ApiResponse.STATUS_OK, "Fetched products successfully", products);
+        return ResponseEntity.ok(response);
+
     }
+
     @GetMapping("/all")
-    public ResponseEntity<List<ProductDTO>> showAllProducts() {
+    public ResponseEntity<ApiResponse> showAllProducts() {
 
         List<ProductDTO> products = productService.getAllProducts();
-        return ResponseEntity.ok(products);
+        ApiResponse response = new ApiResponse(ApiResponse.STATUS_OK, "Fetched products successfully", products);
+        return ResponseEntity.ok(response);
     }
 
     // Lấy chi tiết một sản phẩm
     @GetMapping("/{id}")
-    public ResponseEntity<ProductDTO> getProductById(@PathVariable Long id) {
+    public ResponseEntity<ApiResponse> getProductById(@PathVariable Long id) {
         ProductDTO product = productService.getProductById(id);
         if (product != null) {
-            return ResponseEntity.ok(product);
+            ApiResponse response = new ApiResponse(ApiResponse.STATUS_OK, "Fetched product successfully", product);
+            return ResponseEntity.ok(response);
         } else {
             return ResponseEntity.notFound().build();
         }
@@ -49,17 +56,19 @@ public class ProductController {
 
     // Thêm sản phẩm mới
     @PostMapping
-    public ResponseEntity<ProductDTO> addProduct(@RequestBody ProductDTO productDTO) {
+    public ResponseEntity<ApiResponse> addProduct(@RequestBody ProductDTO productDTO) {
         ProductDTO newProduct = productService.addProduct(productDTO);
-        return ResponseEntity.ok(newProduct);
+        ApiResponse response = new ApiResponse(ApiResponse.STATUS_OK, "Added product successfully", newProduct);
+        return ResponseEntity.ok(response);
     }
 
     // Cập nhật sản phẩm
     @PutMapping("/{id}")
-    public ResponseEntity<ProductDTO> updateProduct(@PathVariable Long id, @RequestBody ProductDTO productDTO) {
+    public ResponseEntity<ApiResponse> updateProduct(@PathVariable Long id, @RequestBody ProductDTO productDTO) {
         ProductDTO updatedProduct = productService.updateProduct(id, productDTO);
         if (updatedProduct != null) {
-            return ResponseEntity.ok(updatedProduct);
+            ApiResponse response = new ApiResponse(ApiResponse.STATUS_OK, "Updated product successfully", updatedProduct);
+            return ResponseEntity.ok(response);
         } else {
             return ResponseEntity.notFound().build();
         }
@@ -67,15 +76,17 @@ public class ProductController {
 
     // Xóa sản phẩm
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteProduct(@PathVariable Long id) {
+    public ResponseEntity<ApiResponse> deleteProduct(@PathVariable Long id) {
         productService.deleteProduct(id);
-        return ResponseEntity.noContent().build();
+        ApiResponse response = new ApiResponse(ApiResponse.STATUS_OK, "Deleted product successfully");
+        return ResponseEntity.ok(response);
     }
 
     // API để khởi tạo dữ liệu cho Shop
     @PostMapping("/initialize")
-    public ResponseEntity<String> initializeShopData() {
+    public ResponseEntity<ApiResponse> initializeShopData() {
         shopService.initializeShopData();
-        return ResponseEntity.ok("Shop data initialized");
+        ApiResponse response = new ApiResponse(ApiResponse.STATUS_OK, "Initialized shop data successfully");
+        return ResponseEntity.ok(response);
     }
 }

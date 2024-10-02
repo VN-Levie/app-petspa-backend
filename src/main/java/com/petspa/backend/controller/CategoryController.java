@@ -1,8 +1,10 @@
 package com.petspa.backend.controller;
 
+import com.petspa.backend.dto.ApiResponse;
 import com.petspa.backend.dto.CategoryDTO;
 import com.petspa.backend.service.CategoryService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -16,30 +18,39 @@ public class CategoryController {
     private CategoryService categoryService;
 
     @GetMapping
-    public ResponseEntity<List<CategoryDTO>> getAllCategories() {
+    public ResponseEntity<ApiResponse> getAllCategories() {
+       try {
         List<CategoryDTO> categories = categoryService.getAllCategories();
-        return ResponseEntity.ok(categories);
+        ApiResponse response = new ApiResponse(ApiResponse.STATUS_OK, "Fetched Cstegories successfully", categories);
+        return ResponseEntity.ok(response);
+       } catch (Exception e) {
+        ApiResponse response = new ApiResponse(ApiResponse.STATUS_BAD_REQUEST, e.getMessage(), null);
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+       }
     }
 
     @PostMapping
-    public ResponseEntity<CategoryDTO> addCategory(@RequestBody CategoryDTO categoryDTO) {
+    public ResponseEntity<ApiResponse> addCategory(@RequestBody CategoryDTO categoryDTO) {
         CategoryDTO savedCategory = categoryService.addCategory(categoryDTO);
-        return ResponseEntity.ok(savedCategory);
+        ApiResponse response = new ApiResponse(ApiResponse.STATUS_CREATED, "Added Category successfully", savedCategory);
+        return ResponseEntity.ok(response);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<CategoryDTO> updateCategory(@PathVariable Long id, @RequestBody CategoryDTO categoryDTO) {
+    public ResponseEntity<ApiResponse> updateCategory(@PathVariable Long id, @RequestBody CategoryDTO categoryDTO) {
         CategoryDTO updatedCategory = categoryService.updateCategory(id, categoryDTO);
         if (updatedCategory != null) {
-            return ResponseEntity.ok(updatedCategory);
+            ApiResponse response = new ApiResponse(ApiResponse.STATUS_OK, "Updated Category successfully", updatedCategory);
+            return ResponseEntity.ok(response);
         } else {
             return ResponseEntity.notFound().build();
-        }
+        } 
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteCategory(@PathVariable Long id) {
+    public ResponseEntity<ApiResponse> deleteCategory(@PathVariable Long id) {
         categoryService.deleteCategory(id);
-        return ResponseEntity.noContent().build();
+        ApiResponse response = new ApiResponse(ApiResponse.STATUS_OK, "Deleted Category successfully", null);
+        return ResponseEntity.ok(response);
     }
 }

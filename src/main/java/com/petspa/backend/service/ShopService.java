@@ -19,17 +19,23 @@ public class ShopService {
     @Autowired
     private ProductRepository productRepository;
 
-    // Dữ liệu mẫu cho sản phẩm
-    private final List<String> foodNames = Arrays.asList("Thức ăn cho chó", "Thức ăn cho mèo", "Snack cho chó", "Snack cho mèo", "Hạt dinh dưỡng", "Thức ăn khô");
-    private final List<String> toyNames = Arrays.asList("Bóng đồ chơi", "Xương gặm cao su", "Đồ chơi nhai", "Đồ chơi phát âm", "Dây thừng kéo co", "Chuột đồ chơi");
+    // Sample data for products
+    private final List<String> foodNames = Arrays.asList("Dog Food", "Cat Food", "Dog Snack", "Cat Snack", "Nutritional Seeds", "Dry Food");
+    private final List<String> toyNames = Arrays.asList("Toy Ball", "Rubber Chew Bone", "Chew Toy", "Sound Toy", "Tug Rope", "Toy Mouse");
+    // Accessories
+    private final List<String> accessoryNames = Arrays.asList("Collar", "Harness", "Leash");
+    // Clothes
+    private final List<String> clothesNames = Arrays.asList("Dog Sweater", "Cat Raincoat", "Dog T-Shirt", "Cat Jacket", "Cat T-Shirt");
 
     // Khởi tạo dữ liệu cho Shop (Sản phẩm và danh mục)
     public void initializeShopData() {
         if (productRepository.findAll().isEmpty()) {
             List<Map<String, List<String>>> categories = new ArrayList<>();
 
-            categories.add(Map.of("Thức ăn", foodNames));
-            categories.add(Map.of("Đồ chơi", toyNames));
+            categories.add(Map.of("Food", foodNames));
+            categories.add(Map.of("Toy", toyNames));
+            categories.add(Map.of("Accessory", accessoryNames));
+            categories.add(Map.of("Clothes", clothesNames));
 
             for (Map<String, List<String>> categoryMap : categories) {
                 for (Map.Entry<String, List<String>> entry : categoryMap.entrySet()) {
@@ -37,7 +43,7 @@ public class ShopService {
                     List<String> productNames = entry.getValue();
 
                     Category category = categoryRepository.findByName(categoryName)
-                            .orElseGet(() -> categoryRepository.save(new Category(categoryName, "Mô tả cho " + categoryName)));
+                            .orElseGet(() -> categoryRepository.save(new Category(categoryName, "Description for " + categoryName)));
 
                     Random random = new Random();
                     int productCount = random.nextInt(8) + 3;

@@ -31,10 +31,13 @@ public class LoggingInterceptor implements HandlerInterceptor {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM HH:mm:ss");
         String time = LocalDateTime.now().format(formatter);
 
+        //in ra toàn bộ thông tin của request
+   
+
         // In ra URL chính và phương thức được gọi
         System.out.println(ANSI_GREEN + "[" + time + "]" + ANSI_RESET + " " + ANSI_YELLOW + method + ANSI_RESET + " "
                 + ANSI_CYAN + fullUrl + ANSI_RESET);
-
+              
         return true; // Tiếp tục cho phép xử lý request
     }
 
