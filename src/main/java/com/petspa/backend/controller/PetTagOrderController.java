@@ -49,4 +49,18 @@ public class PetTagOrderController {
         ApiResponse response = new ApiResponse(ApiResponse.STATUS_OK, "Pet tag order deleted successfully", null);
         return ResponseEntity.ok(response);
     }
+
+    //lấy theo id
+    @GetMapping("/{id}")
+    public ResponseEntity<ApiResponse> getOrderById(@PathVariable Long id) {
+        PetTagOrderDTO order = petTagOrderService.getOrderById(id);
+
+        if (order == null) {
+            ApiResponse response = new ApiResponse(ApiResponse.STATUS_NOT_FOUND, "Pet tag order not found", null);
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
+        }
+
+        ApiResponse response = new ApiResponse(ApiResponse.STATUS_OK, "Pet tag order details", order);
+        return ResponseEntity.ok(response);
+    }
 }

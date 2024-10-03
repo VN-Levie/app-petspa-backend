@@ -44,7 +44,7 @@ public class PetTagController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
         }
 
-        ApiResponse response = new ApiResponse(ApiResponse.STATUS_OK, "Pet tag details", petTag);
+        ApiResponse response = new ApiResponse(ApiResponse.STATUS_OK, "Pet tag details2", petTag);
         return ResponseEntity.ok(response);
     }
 

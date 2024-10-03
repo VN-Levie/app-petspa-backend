@@ -294,4 +294,12 @@ public class AuthController {
         }
     }
 
+    //get all account
+    @GetMapping("/accounts/all")
+    public ResponseEntity<ApiResponse> getAllAccount() {
+        List<Account> accounts = accountRepository.findAll();
+        ApiResponse response = new ApiResponse(ApiResponse.STATUS_OK, "List of accounts", accounts);
+        return ResponseEntity.ok(response);
+    }
+
 }

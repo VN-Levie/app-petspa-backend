@@ -28,6 +28,7 @@ public class PetTagService {
         petTag.setName(petTagDTO.getName());
         petTag.setDescription(petTagDTO.getDescription());
         petTag.setIconUrl(petTagDTO.getIconUrl());
+        petTag.setPrice(petTagDTO.getPrice());
 
         PetTag savedPetTag = petTagRepository.save(petTag);
         return convertToDTO(savedPetTag);
@@ -41,6 +42,7 @@ public class PetTagService {
             PetTag petTag = existingPetTag.get();
             petTag.setName(petTagDTO.getName());
             petTag.setDescription(petTagDTO.getDescription());
+            petTag.setPrice(petTagDTO.getPrice());
 
             if (petTagDTO.getIconUrl() != null) {
                 petTag.setIconUrl(petTagDTO.getIconUrl());
@@ -79,6 +81,18 @@ public class PetTagService {
         dto.setName(petTag.getName());
         dto.setDescription(petTag.getDescription());
         dto.setIconUrl(petTag.getIconUrl());
+        dto.setPrice(petTag.getPrice());
         return dto;
+    }
+
+    // Chuyển đổi từ PetTagDTO sang PetTag
+    private PetTag convertToEntity(PetTagDTO petTagDTO) {
+        PetTag petTag = new PetTag();
+        petTag.setId(petTagDTO.getId());
+        petTag.setName(petTagDTO.getName());
+        petTag.setDescription(petTagDTO.getDescription());
+        petTag.setIconUrl(petTagDTO.getIconUrl());
+        petTag.setPrice(petTagDTO.getPrice());
+        return petTag;
     }
 }

@@ -8,6 +8,8 @@ import lombok.NoArgsConstructor;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 @Table(name = "Account")
 @Entity
 @Data
@@ -33,6 +35,7 @@ public class Account extends BaseEntity {
 
     // Liên kết với bảng AddressBook, sử dụng OneToMany vì một tài khoản có thể có nhiều địa chỉ
     @OneToMany(mappedBy = "account", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JsonIgnore
     private List<AddressBook> addressBooks;
 
   

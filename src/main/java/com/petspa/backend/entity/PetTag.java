@@ -1,5 +1,7 @@
 package com.petspa.backend.entity;
 
+import java.math.BigDecimal;
+
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -21,4 +23,7 @@ public class PetTag extends BaseEntity {
     // Ảnh minh họa cho loại thú cưng
     @Column(name = "icon_url", nullable = true)
     private String iconUrl;
+
+    @Column(nullable = false)
+    private BigDecimal price;
 }

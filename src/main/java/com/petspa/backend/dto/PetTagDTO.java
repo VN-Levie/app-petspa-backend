@@ -23,4 +23,7 @@ public class PetTagDTO {
     // Ảnh minh họa cho loại thú cưng
     @NotBlank(message = "Icon URL cannot be blank")
     private String iconUrl;
+
+    @NotNull(message = "Price cannot be null")
+    private BigDecimal price;
 }
