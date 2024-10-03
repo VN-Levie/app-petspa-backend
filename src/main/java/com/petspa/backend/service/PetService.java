@@ -139,7 +139,7 @@ public class PetService {
         petDTO.setAvatarUrl(pet.getAvatarUrl());
         petDTO.setPetTypeId(pet.getPetType().getId());
         petDTO.setAccountId(pet.getAccountId());
-        petDTO.setDeleted(pet.getDeleted());
+        petDTO.setDeleted(pet.isDeleted());
         return petDTO;
     }
 

@@ -22,7 +22,7 @@ public abstract class BaseEntity {
 
     // Thêm trường để đánh dấu xóa mềm
     @Column(nullable = false)
-    private Boolean deleted = false;
+    private boolean deleted = false;
 
     @PrePersist
     protected void onCreate() {

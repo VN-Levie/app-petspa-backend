@@ -16,4 +16,5 @@ public class SpaProductDTO {
     private String imageUrl;
     private Long category;
     private String description;
+    private boolean deleted;
 }

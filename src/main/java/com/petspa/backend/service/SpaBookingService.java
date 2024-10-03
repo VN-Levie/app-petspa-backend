@@ -149,4 +149,16 @@ public class SpaBookingService {
         spaCategory.ifPresent(category::setService);
         return category;
     }
+
+    public SpaBookingDTO cancel(Long id) {
+        Optional<SpaBooking> existingCategory = spaBookingRepository.findById(id);
+        if (existingCategory.isPresent()) {
+            SpaBooking category = existingCategory.get();
+            category.setStatus(SpaBooking.STATUS_CANCELLED);
+            category = spaBookingRepository.save(category);
+
+            return convertToDTO(category);
+        }
+        return null;
+    }
 }

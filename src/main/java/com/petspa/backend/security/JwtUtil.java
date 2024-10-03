@@ -47,8 +47,7 @@ public class JwtUtil {
         // thêmcác thông tin email, ngày tạo tài khoản, name
         return Jwts.builder()
                 .setSubject(account.getEmail())
-                .claim("name", account.getName())
-                .claim("createdAt", account.getCreatedAt())
+                .claim("name", account.getName())                
                 .claim("type", "access_token")
                 .setIssuedAt(new Date())
                 .setExpiration(new Date((new Date()).getTime() + jwtExpirationInMs))

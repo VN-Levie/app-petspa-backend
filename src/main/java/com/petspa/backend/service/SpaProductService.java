@@ -89,6 +89,7 @@ public class SpaProductService {
         categoryDTO.setPrice(category.getPrice());
         categoryDTO.setCategory(category.getCategory().getId());
         categoryDTO.setImageUrl(category.getImageUrl());
+        categoryDTO.setDeleted(category.isDeleted());
         return categoryDTO;
     }
 
@@ -102,6 +103,7 @@ public class SpaProductService {
         Optional<SpaCategory> spaCategory = categoryRepository.findById(categoryDTO.getCategory());
         spaCategory.ifPresent(category::setCategory);
         category.setImageUrl(categoryDTO.getImageUrl());
+        category.setDeleted(categoryDTO.isDeleted());
 
         return category;
     }

@@ -1,4 +1,4 @@
 -------------------------------------------------------------------------------
 Test set: com.petspa.backend.BackendApplicationTests
 -------------------------------------------------------------------------------
-Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 28.75 s -- in com.petspa.backend.BackendApplicationTests
+Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 6.549 s -- in com.petspa.backend.BackendApplicationTests

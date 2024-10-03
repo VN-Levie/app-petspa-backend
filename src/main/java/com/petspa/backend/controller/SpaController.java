@@ -155,6 +155,18 @@ public class SpaController {
         return ResponseEntity.ok(response);
     }
 
+    //get product by id
+    @GetMapping("/product/{id}")
+    public ResponseEntity<ApiResponse> getProductById(@PathVariable Long id) {
+        SpaProductDTO product = spaProductService.getById(id);
+        if (product == null || product.isDeleted()) {
+            ApiResponse response = new ApiResponse(ApiResponse.STATUS_NOT_FOUND, "Product not found", null);
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
+        }
+        ApiResponse response = new ApiResponse(ApiResponse.STATUS_OK, "Fetched product by id successfully", product);
+        return ResponseEntity.ok(response);
+    }
+
     // #endregion
 
     // #region Spa Booking
@@ -348,6 +360,65 @@ public class SpaController {
         List<SpaBookingDTO> bookings = spaBookingService.getBookingByAccountId(accountId, false);
         ApiResponse response = new ApiResponse(ApiResponse.STATUS_OK, "Fetched bookings by account id successfully",
                 bookings);
+        return ResponseEntity.ok(response);
+    }
+
+    //get booking by id
+    @GetMapping("/bookings/{id}")
+    public ResponseEntity<ApiResponse> getBookingById(@PathVariable Long id) {
+        SpaBookingDTO booking = spaBookingService.getById(id);
+        if (booking == null || booking.isDeleted()) {
+            ApiResponse response = new ApiResponse(ApiResponse.STATUS_NOT_FOUND, "Booking not found", null);
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
+        }
+        ApiResponse response = new ApiResponse(ApiResponse.STATUS_OK, "Fetched booking by id successfully", booking);
+        return ResponseEntity.ok(response);
+    }
+
+    //hủy booking
+    @PutMapping("/bookings/cancel/{id}")
+    public ResponseEntity<ApiResponse> cancelBooking(@PathVariable Long id) {
+        // Lấy booking theo id
+        SpaBookingDTO booking = spaBookingService.getById(id);
+
+        if (booking == null || booking.isDeleted()) {
+            ApiResponse response = new ApiResponse(ApiResponse.STATUS_NOT_FOUND, "Booking not found", null);
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
+        }
+
+        // // Lấy thông tin người dùng hiện tại từ SecurityContextHolder
+        // Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        // String currentUsername = authentication.getName();
+        // Optional<Account> accountOpt = accountRepository.findByEmail(currentUsername);
+
+        // if (accountOpt.isEmpty()) {
+        //     ApiResponse response = new ApiResponse(ApiResponse.STATUS_UNAUTHORIZED, "Unauthorized", null);
+        //     return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
+        // }
+
+        // Account currentUser = accountOpt.get();
+
+        // // Kiểm tra quyền admin
+        // boolean isAdmin = currentUser.getRoles().contains("ROLE_ADMIN");
+
+        // // Kiểm tra nếu không phải admin và accountId không khớp
+        // if (!isAdmin && !booking.getAccountId().equals(currentUser.getId())) {
+        //     ApiResponse response = new ApiResponse(ApiResponse.STATUS_FORBIDDEN,
+        //             "You do not have permission to cancel this booking", null);
+        //     return ResponseEntity.status(HttpStatus.FORBIDDEN).body(response);
+        // }
+
+        // Kiểm tra trạng thái của booking
+        if (!booking.getStatus().equals(SpaBooking.STATUS_PENDING) && !booking.getStatus().equals(SpaBooking.STATUS_CONFIRMED)) {
+            ApiResponse response = new ApiResponse(ApiResponse.STATUS_BAD_REQUEST,
+                    "Cannot cancel booking with status " + booking.getStatus(),
+                    null);
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+        }
+
+        // Tiến hành hủy
+        SpaBookingDTO updatedBooking = spaBookingService.cancel(id);
+        ApiResponse response = new ApiResponse(ApiResponse.STATUS_OK, "Canceled booking successfully", updatedBooking);
         return ResponseEntity.ok(response);
     }
 

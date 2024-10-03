@@ -128,6 +128,7 @@ public class AuthController {
                     "User registered and logged in successfully", data);
             return ResponseEntity.status(HttpStatus.CREATED).body(response);
         } catch (Exception e) {
+            e.printStackTrace();
             ApiResponse response = new ApiResponse(ApiResponse.STATUS_BAD_REQUEST, "Plesy fill all field!",
                     null);
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);

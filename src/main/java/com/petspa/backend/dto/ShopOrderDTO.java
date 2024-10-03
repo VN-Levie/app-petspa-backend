@@ -33,7 +33,7 @@ public class ShopOrderDTO {
     private String paymentStatus;
 
     @NotBlank(message = "Delivery Address cannot be blank")
-    @Size(max = 255, message = "Delivery Address should not exceed 255 characters")
+    @Size(max = 255, message = "Delivery Address should not exceed 255 characters") //full address
     private String deliveryAddress;
 
     @NotNull(message = "Delivery Date cannot be null")
@@ -41,6 +41,23 @@ public class ShopOrderDTO {
 
     @NotNull(message = "Product Quantities cannot be null")
     private List<ProductQuantityDTO> productQuantities; // Danh sách ProductQuantityDTO
+
+    ////tên ng nhận hàng, sdt, email, id address
+    @NotBlank(message = "Receiver Name cannot be blank")
+    @Size(max = 255, message = "Receiver Name should not exceed 255 characters")
+    private String receiverName;
+
+    @NotBlank(message = "Receiver Phone cannot be blank")
+    @Size(max = 20, message = "Receiver Phone should not exceed 20 characters")
+    private String receiverPhone;
+
+    @NotBlank(message = "Receiver Email cannot be blank")
+    @Size(max = 255, message = "Receiver Email should not exceed 255 characters")
+    private String receiverEmail;
+
+    @NotNull(message = "Receiver Address ID cannot be null")
+    private Long receiverAddressId;
+
 
     // toString
     @Override

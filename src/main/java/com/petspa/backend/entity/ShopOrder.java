@@ -28,11 +28,24 @@ public class ShopOrder extends BaseEntity {
     @Column(name = "payment_status", nullable = false)
     private String paymentStatus;
 
-    @Column(name = "delivery_address", nullable = false)
+    @Column(name = "delivery_address", nullable = false) //full address
     private String deliveryAddress;
 
-    @Column(name = "delivery_date", nullable = false)
+    @Column(name = "delivery_date", nullable = true)
     private LocalDateTime deliveryDate;
+
+    //tên ng nhận hàng, sdt, email, id address
+    @Column(name = "receiver_name", nullable = false)
+    private String receiverName;
+
+    @Column(name = "receiver_phone", nullable = false)
+    private String receiverPhone;
+
+    @Column(name = "receiver_email", nullable = false)
+    private String receiverEmail;
+
+    @Column(name = "receiver_address_id", nullable = false)
+    private Long receiverAddressId;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "account_id", nullable = false)
