@@ -16,8 +16,8 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 @NoArgsConstructor
 @AllArgsConstructor
 @AttributeOverrides({
-    @AttributeOverride(name = "createdAt", column = @Column(name = "created_at", insertable = false, updatable = false)),
-    @AttributeOverride(name = "updatedAt", column = @Column(name = "updated_at"))
+        @AttributeOverride(name = "createdAt", column = @Column(name = "created_at", insertable = false, updatable = false)),
+        @AttributeOverride(name = "updatedAt", column = @Column(name = "updated_at"))
 })
 public class Account extends BaseEntity {
 
@@ -33,10 +33,10 @@ public class Account extends BaseEntity {
     @Column(name = "name")
     private String name;
 
-    // Liên kết với bảng AddressBook, sử dụng OneToMany vì một tài khoản có thể có nhiều địa chỉ
+    // Liên kết với bảng AddressBook, sử dụng OneToMany vì một tài khoản có thể có
+    // nhiều địa chỉ
     @OneToMany(mappedBy = "account", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JsonIgnore
     private List<AddressBook> addressBooks;
 
-  
 }

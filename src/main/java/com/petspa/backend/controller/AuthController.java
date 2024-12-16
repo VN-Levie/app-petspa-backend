@@ -61,20 +61,22 @@ public class AuthController {
             String username = loginDTO.getEmail();
             String password = loginDTO.getPassword();
             if (username == null || username.isEmpty() || password == null || password.isEmpty()) {
-                ApiResponse response = new ApiResponse(ApiResponse.STATUS_BAD_REQUEST, "Username or password is empty!",
+                ApiResponse response = new ApiResponse(ApiResponse.STATUS_UNAUTHORIZED,
+                        "Username or password is empty!",
                         null);
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
             }
             Optional<Account> accountOpt = accountRepository.findByEmail(username);
             if (accountOpt.isEmpty()) {
-                ApiResponse response = new ApiResponse(ApiResponse.STATUS_BAD_REQUEST, "Account does not exist!", null);
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+                ApiResponse response = new ApiResponse(ApiResponse.STATUS_UNAUTHORIZED, "Account does not exist!",
+                        null);
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
             }
 
             Account account = accountOpt.get();
             if (!passwordEncoder.matches(password, account.getPassword())) {
-                ApiResponse response = new ApiResponse(ApiResponse.STATUS_BAD_REQUEST, "Incorrect password!", null);
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+                ApiResponse response = new ApiResponse(ApiResponse.STATUS_UNAUTHORIZED, "Incorrect password!", null);
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
             }
 
             Authentication authentication = authenticationManager.authenticate(
@@ -88,9 +90,9 @@ public class AuthController {
             return ResponseEntity.ok(response);
 
         } catch (Exception e) {
-            ApiResponse response = new ApiResponse(ApiResponse.STATUS_BAD_REQUEST, "Username or password is empty!",
+            ApiResponse response = new ApiResponse(ApiResponse.STATUS_UNAUTHORIZED, "Username or password is empty!",
                     null);
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
         }
 
     }
@@ -174,7 +176,7 @@ public class AuthController {
             refreshToken = getToken(refreshToken);
             if (refreshToken.startsWith("Bearer ")) {
                 refreshToken = refreshToken.substring(7);
-            }          
+            }
             try {
                 if (!jwtUtil.validateToken(refreshToken, "refresh_token")) {
                     ApiResponse response = new ApiResponse(ApiResponse.STATUS_UNAUTHORIZED, "Invalid refresh token",
@@ -294,7 +296,7 @@ public class AuthController {
         }
     }
 
-    //get all account
+    // get all account
     @GetMapping("/accounts/all")
     public ResponseEntity<ApiResponse> getAllAccount() {
         List<Account> accounts = accountRepository.findAll();
